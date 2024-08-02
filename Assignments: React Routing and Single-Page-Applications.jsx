@@ -2,9 +2,34 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import md5 from 'md5';
+import styled from 'styled-components';
 import './App.css';
 import './components/ExternalStyledComponent.css';
 import styles from './components/ModuleStyledComponent.module.css';
+
+// ErrorBoundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Error caught by ErrorBoundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong.</h1>;
+    }
+
+    return this.props.children;
+  }
+};
 
 // Navigation Component
 const Navigation = () => {
@@ -96,41 +121,29 @@ const MarvelCharacters = () => {
   );
 };
 
-// ErrorBoundary Component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
+// StyledComponent using styled-components
+const StyledDiv = styled.div`
+  color: red;
+  background-color: lightblue;
+`;
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Error caught by ErrorBoundary:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
-    }
-
-    return this.props.children;
-  }
-};
-
-// ExternalStyledComponent using regular CSS
-const ExternalStyledComponent = () => (
-  <div className="external-styled">
-    This is an externally styled component.
-  </div>
+const StyledComponent = () => (
+  <StyledDiv>
+    This is a styled component.
+  </StyledDiv>
 );
 
 // ModuleStyledComponent using CSS Modules
 const ModuleStyledComponent = () => (
   <div className={styles.moduleStyled}>
     This is a module styled component.
+  </div>
+);
+
+// ExternalStyledComponent using regular CSS
+const ExternalStyledComponent = () => (
+  <div className="external-styled">
+    This is an externally styled component.
   </div>
 );
 
@@ -149,8 +162,9 @@ function App() {
             <Route path="/marvel-characters" element={<MarvelCharacters />} />
             <Route path="*" element={<Home />} /> {/* Fallback to Home for undefined routes */}
           </Routes>
-          <ExternalStyledComponent />
+          <StyledComponent />
           <ModuleStyledComponent />
+          <ExternalStyledComponent />
         </div>
       </Router>
     </ErrorBoundary>
